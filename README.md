@@ -1,4 +1,4 @@
-# DemoSync - API de Pagamentos com Resposta Síncrona e Processamento Assíncrono
+# DemoSync
 
 DemoSync é uma prova de conceito (PoC) que demonstra como implementar uma API de pagamentos com interface síncrona para o cliente, enquanto realiza o processamento de forma assíncrona internamente usando Kafka.
 
