@@ -112,7 +112,7 @@ demosync/
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/demosync.git
+   git clone https://github.com/osouzaelias/demosync.git
    cd demosync
    ```
 
