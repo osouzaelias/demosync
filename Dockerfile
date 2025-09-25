@@ -1,0 +1,41 @@
+# ---------- Builder ----------
+FROM golang:1.25-alpine AS builder
+WORKDIR /app
+
+RUN apk add --no-cache \
+    build-base \
+    pkgconf \
+    openssl-dev \
+    cyrus-sasl-dev \
+    zlib-dev \
+    librdkafka-dev \
+    git
+
+ENV CGO_ENABLED=1
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+# 👇 Força o confluent-kafka-go a usar a librdkafka do sistema (dinâmico)
+RUN go build -tags dynamic -ldflags "-s -w" -o /payment-api ./cmd/api/main.go
+
+# ---------- Runtime ----------
+FROM alpine:3.22
+WORKDIR /app
+
+RUN apk add --no-cache \
+    librdkafka \
+    cyrus-sasl \
+    openssl \
+    ca-certificates
+
+COPY --from=builder /payment-api /app/payment-api
+
+ENV LD_LIBRARY_PATH=/usr/lib
+ENV KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+ENV KAFKA_RESPONSE_TOPIC=payment-responses
+
+EXPOSE 8080
+CMD ["/app/payment-api"]
